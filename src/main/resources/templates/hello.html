@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta charset="UTF-8">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 先引入 Vue -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- 引入 http-vue-loader -->
+    <script src="https://unpkg.com/http-vue-loader"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <style>.text-wrapper { white-space: pre-wrap; }</style>
+</head>
+<body>
+<div id="todo-list-example">
+    <form v-on:submit.prevent="addNewTodo">
+        <label for="new-todo">Add a todo</label>
+        <textarea :placeholder="placeholder"
+                  v-model="newTodoText"
+                  id="new-todo"
+                  style="resize:none;width:600px;height:200px;"
+        ></textarea>
+<!--        <input-->
+<!--                v-model="newTodoText"-->
+<!--                id="new-todo"-->
+<!--                placeholder="E.g. call liuyi dad"-->
+<!--        >-->
+        <button>Add</button>
+    </form>
+<!--    <div  class="text-wrapper">-->
+    <ul>
+        <div class="text-wrapper"
+                is="todo-item"
+                v-for="(todo, index) in todos"
+                v-bind:title="todo.title"
+                v-on:remove="rm(todos,index)"
+
+        ></div>
+    </ul>
+<!--    v-on:remove="todos.splice(index, 1)"-->
+<!--    </div>-->
+</div>
+<!--                v-bind:title="todo.title"-->
+<!--                v-bind:key="todo.id"-->
+<script>
+Vue.component('todo-item', {
+  template: '\
+    <li>\
+      {{ title }}\
+      <button v-on:click="$emit(\'remove\')">Remove</button>\
+    </li>\
+  ',
+  props: ['title']
+})
+
+new Vue({
+  el: '#todo-list-example',
+  data: {
+
+    newTodoText: '',
+    todos: [],
+    nextTodoId: 4
+  },
+   mounted () {
+   this.get()
+   },
+  methods: {
+    get(){
+      var this_=this;
+      //调用最开始写的那个接口，拉取全部数据
+      axios.get('/list',{ params:{top:50}}).then(function(res){
+        this_.userList=res.data
+        for(var i=0;i<res.data.length;i++){
+            tmpdata=res.data[i]
+
+            var tmp={}
+            tmp['id']=i
+            tmp['title']=tmpdata
+            this_.todos.push(tmp)
+        }
+        console.log(res.data)
+      }).catch(function(err){
+        console.log(err)
+      }) },
+
+    add(cont){
+        axios.get('/add', {params: {content:cont }
+    }).then(response => {
+        // handle success
+        this.resultTwo.successInfo = response.data;
+    }).catch(error => {
+        // handle error
+<!--        this.resultTwo.failureInfo = error;-->
+    }).then(() => {
+        // always executed
+    });
+
+    },
+
+    rm(todo,index){
+      todo.splice(index, 1)
+      axios.get('/rm',{params:{'index':index}}).then(response => {
+        // handle success
+       // this.resultTwo.successInfo = response.data;
+    }).catch(error => {
+        // handle error
+<!--        this.resultTwo.failureInfo = error;-->
+    }).then(() => {
+        // always executed
+    });
+
+    },
+
+    addNewTodo: function () {
+      this.todos.push({
+        id: this.nextTodoId++,
+        title: this.newTodoText
+      })
+      this.add(this.newTodoText)
+      this.newTodoText = ''
+    },
+
+    preText (pretext) {
+    return pretext.replace(/\r\n/g, '<br/>').replace(/\n/g, '<br/>').replace(/\s/g, '&nbsp;')}
+
+  }
+})
+</script>
+</body>
+</html>
