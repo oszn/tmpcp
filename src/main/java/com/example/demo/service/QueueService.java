@@ -30,9 +30,11 @@ public class QueueService {
         if(store.size()>maxlen){
             store.remove(0);
         }
-        store.add("\n"+s+"\n");
+        store.add(0,"\n"+s+"\n");
     }
-
+//    public List<String> getRev(){
+//
+//    }
     public void remote(int index){
         store.remove(index);
     }
