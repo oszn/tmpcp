@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.example</groupId>
     <artifactId>myTlog</artifactId>
-    <version>log 0.1</version>
+    <version>log</version>
     <name>myTlog</name>
     <description>Demo project for Spring Boot</description>
 
